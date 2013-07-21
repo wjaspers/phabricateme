@@ -1,0 +1,3 @@
+[submodule "extension/oauth2"]
+	path = extension/oauth2
+	url = https://github.com/borismus/oauth2-extensions.git
