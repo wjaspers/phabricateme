@@ -1,0 +1,33 @@
+{
+	"manifest_version": 2,
+	"name": "PhabricateMe",
+	"version": "1",
+	"description": "Work smarter, not harder, with your Phabricator instance.",
+
+	"background": {
+		"scripts": [
+			"oauth2/lib/oauth2.js",
+			"js/background.js"
+		],
+		"persistent": false
+	},
+
+	"icons": {
+		"64": "icons/button.png"
+	},
+
+	// FIXME: "options_page": "pages/options.html",
+
+	"browser_action": {
+		"default_icon": "icons/button.png",
+		"default_title": "PhabricateMe",
+		// FIXME: "default_popup": "pages/popup.html"
+	},
+
+	"permissions": [
+		"*://*/*",
+		"storage"
+	],
+
+	"content_security_policy": "script-src 'self'; object-src 'self'"
+}
