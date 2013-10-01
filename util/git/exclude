@@ -1,0 +1,58 @@
+# If you need more than what this file provides, I strongly suggest
+# that you check out the gitignore templates and gibo, which helps assemble
+# a custom .gitignore file from the boilerplates.
+#
+#   gibo:  https://github.com/simonwhitaker/gitignore-boilerplates
+#   templates:  https://github.com/github/gitignore
+
+# Apple metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows caches
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Vim backups, avoiding SWF
+*.sw[g-p]
+
+# Generic backup files
+*.bak
+*~
+*#
+
+# Various common IDEs
+*.as3proj
+.buildpath
+.c9revisions/
+.cproject
+.project
+.idea/
+.settings*
+.metadata/
+nbproject/
+
+# For ctags/etags - these are generated files
+tags
+!tags/
+TAGS
+!TAGS/
+
+# Extra stuff installed or generated automatically for you and none
+# should ever be committed.
+/node_modules/
+.sass-cache/
+/vendor/
+
+# Generated log files
+/npm-debug.log
+
+# Custom location for local files
+/local

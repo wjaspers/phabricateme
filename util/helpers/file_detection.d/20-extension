@@ -1,0 +1,40 @@
+#!/bin/bash
+
+EXT="$(file_extension "$1" | tr "A-Z" "a-z")"
+
+case "$EXT" in
+	css)
+		echo "css"
+		;;
+
+	htm|html)
+		echo "html"
+		;;
+		
+	js)
+		echo "js"
+		;;
+
+	json)
+		echo "json"
+		;;
+
+	md)
+		echo "markdown"
+		;;
+
+	php|inc)
+		echo "php"
+		;;
+	
+	yaml|yml)
+		echo "yaml"
+		;;
+
+	*)
+		# Exit 0 if we did NOT find anything and need to keep trying
+		exit 0
+esac
+
+# Exit 1 - we found something and should stop running detection scripts
+exit 1

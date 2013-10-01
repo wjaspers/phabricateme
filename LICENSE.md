@@ -1,0 +1,1 @@
+doc/git-started/LICENSE.md

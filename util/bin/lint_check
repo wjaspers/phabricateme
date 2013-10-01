@@ -1,0 +1,13 @@
+#!/bin/bash
+
+function lint_error() {
+	local FILE="$1"
+
+	echo_clear_line
+	echo_escape "${COLOR_LINT_ERROR}Lint error:${COLOR_RESET}  ${COLOR_LINT_FILENAME}$FILE${COLOR_RESET}"
+}
+
+FILE="$1"
+. "${0%/*}"/git-started-setup
+FILE="$(resolve_path "$STARTING_DIR" "$FILE")"
+run_helpers "LINT" "lint_check.d" "$FILE"

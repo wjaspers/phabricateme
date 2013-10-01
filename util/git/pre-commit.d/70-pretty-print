@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Clean up indentation, whitespace, etc
+
+if $FILE_DELETED || $FILE_IGNORED; then
+	exit 0
+fi
+
+# Only operate on actual files, not symbolic links
+if [ -L "$FILE" ]; then
+	exit 0
+fi
+
+TEMPFILE="$(temporary_file)"
+cp -p "$FILE" "$TEMPFILE"
+BEFORE="$(stat_file "$TEMPFILE")"
+debug "Pretty print before file stat: $BEFORE"
+"${TOOL_DIR}/bin/pretty_print" "$TEMPFILE" "$FILE"
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+	echo_clear_line
+	echo ""
+	echo_escape "${COLOR_PRETTY_ERROR}Error detected during pretty printing${COLOR_RESET}"
+	exit 1
+fi
+
+# No errors detected.  See if file was changed.
+AFTER="$(stat_file "$TEMPFILE")"
+debug "Pretty print after file stat: $AFTER"
+
+if [ "$BEFORE" != "$AFTER" ]; then
+	cp -p "$TEMPFILE" "$FILE"
+	echo_clear_line
+	echo ""
+	echo_escape "${COLOR_PRETTY_MESSAGE}Pretty printed:${COLOR_RESET}  ${COLOR_PRETTY_FILE}$FILE${COLOR_RESET}"
+	echo "Review these changes then add/commit again"
+	exit 1
+else
+	# Cleanup
+	rm "$TEMPFILE"
+fi
+
+exit 0
+
