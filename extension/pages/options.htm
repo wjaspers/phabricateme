@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>PhabricateMe : Options</title>
+	<script src="/oauth2/oauth2.js"></script> 
+	<script src="/js/uri.js"></script>
+	<script src="/js/phabricateme.js"></script>
+ 	<script src="/js/options.js"></script>
+</head>
+<body>
+  <div id="main">
+    	<h1>PHABRICATE ME</h1>
+	<form id="configuration">
+		<!-- GENERAL settings -->
+    		<div class="form-element domain">
+			<label for="domain">Domain</label>
+			<p data-for="domain">The domain name of the phabricator instance you want to access.</p>
+			<input type="url" 
+				class="input" 
+				size="150" 
+				name="domain"
+				id="domain" 
+				required
+				placeholder="https://secure.phabricator.com" 
+			/>
+		</div>
+
+		<fieldset id="authorizationConfig">
+			<legend>Client Authorization</legend>
+			<div class="client-options">
+				<p>This information is required to read or update information within your Phabricator instance. If this data is not supplied, notifications, feeds, etc, will not work.</p>
+				<p>Not sure what any of this is? Ask your Phabricator administrator, or you can attempt to <a class="preview" href="https://secure.phabricator.com/oauthserver/clientauthorization/">create your own application configuration</a>.</p>
+				<div class="form-element client-name">
+					<label for="client-name">Client Name</label>
+					<p data-for="client-name">The name you want to give this chrome extension in your Phabricator instance. The OAuth API requires this to access objects via the Conduit API.</p>
+					<input type="text" 
+						name="authorization[clientName]"
+						id="client-name"
+						placeholder="PhabricateMe" 
+					/>
+				</div>
+
+				<div class="form-element client-secret">
+					<label for="client-secret">Client Secret</label>
+					<p data-for="client-secret">The OAuth secret token generated for your client.</p>
+					<input type="text" 
+						name="authorization[clientSecret]" 
+						id="client-secret" 
+						placeholder="abc123" 
+					/>
+				</div>
+				<div class="form-element update-interval">
+					<label for="update-interval">Update Interval</label>
+					<p data-for="update-interval">How frequently (in seconds) to ask Phabricator for information. There is a 5 second minimum, so phabricator instances aren't getting pummeled with requests.</p>
+					<input class="input" 
+						type="number" 
+						name="authorization[updateInterval]" 
+						id="update-interval" 
+						min="5" 
+						max="180" pattern="[0-9]{1,3}" 
+						required 
+						placeholder="5" 
+						value="5" 
+					/>
+				</div>
+				<button id="authorize">Authorize Now</button>
+			</div>
+		</fieldset>
+
+		<!-- LINKS to display in the popup -->
+		<fieldset class="clearfix" id="popupConfig">
+			<legend>Popup Configuration</legend>
+			<div class="form-element popup checkbox">
+				<input type="checkbox" 
+					class="inline"
+					name="popup[enabled]"
+					id="popup-enabled"
+					value="1" 
+				/>
+				<label for="popup-enabled">Enable Popup</label>
+			</div>
+
+			<div class="form-element shortcuts checkbox">
+				<input type="checkbox" 
+					class="inline" 
+					name="popup[shortcuts]" 
+					id="shortcuts" 
+					value="1"
+				 />
+				<label for="shortcuts">Shortcuts</label>
+				<p data-for="shortcuts">If enabled, shortcuts are displayed in the popup, when activated.</p>
+			</div>
+
+			<div class="form-element shortcuts-options hide" id="shortcuts-options">
+				<!-- shortcuts options are generated -->
+			</div>
+		</fieldset>
+
+		<!-- OMNIBOX settings
+		/* This section needs work */
+		<fieldset class="clearfix" id="omniboxConfig">
+			<legend>Omnibox</legend>
+			<div class="form-element omnibox checkbox clearfix">
+				<input type="checkbox" 
+					class="inline"
+					name="omnibox[enabled]"
+					id="omnibox"
+					value="0"
+				/>
+				<label for="omnibox">Omnibox Helpers</label>
+				<p data-for="omnibox">If enabled, omnibox helpers can provide shortcuts to objects within your Phabricator instance.</p>
+			</div>
+
+			<div class="omnibox-options hide">
+				<div class="form-element omnibox-herald">
+					<input type="checkbox" 
+						name="omnibox[herald]"
+						id="omnibox-herald"
+						value="1"
+					/>
+					<label for="omnibox-herald">Herald Locator</label>
+					<p data-for="omnibox-herald">If enabled, commit or herald searches via the omnibox try to jump directly to the object in your Phabricator instance.</p>
+				</div>
+			</div>
+		</fieldset>
+		-->
+
+		<div class="form-actions" id="formActions">
+			<button id="save" class="btn btn-primary left">Save Settings</button>
+			<button id="terminate" class="btn btn-danger right">Wipe Extension Data</button>
+		</div>
+    </form>
+  </div>
+
+  <div class="footer">
+	<a class="btn btn-mini" href="/pages/credits.html" target="_blank">Credits</a>
+  </div>
+</script>
+</body>
+</html>
