@@ -22,6 +22,7 @@
 			ph.Options.fetchPlugin('Popup', function () {
 			});
 
+
 			/**
 			 *
 			 */
@@ -34,59 +35,38 @@
 				});
 			});
 
+
 			/**
 			 * Listen for changes to the domain.
 			 */
 			var domain = document.getElementById("domain");
 			domain.addEventListener('change', function () {
 				var uri = new Uri(this.value);
-				ph.Options.settings.domain = uri.toString();
+				console.log(uri.toString());
+			});
+
+
+			/**
+			 * Bind a handler to the "save" button.
+			 */
+			document.getElementById("save").addEventListener('click', function() {
+				ph.Options.saveSettings(function() {
+					alert("Settings saved!");
+				});
+			});
+
+
+			/*
+			 * Allow the user to wipe extension data.
+			 */
+			document.getElementById("terminate").addEventListener('click', function() {
+				if (confirm('Are you absolutely sure you want to erase ALL settings for PhabricateMe?')) {
+					chrome.storage.local.clear();
+					alert('Settings cleared.');
+				}
 			});
 		});
 	});
-
-	/**
-	 * Determines how form elements behave.
-	 * @param Object options
-	 *  Default values/settings retrieved from local storage.
-	 */
-	function bindUIEvents(options) {
-		/**
-		 * Bind a handler to the "save" button.
-		 */
-		document.getElementById("save").addEventListener('click', function() {
-			ph.Options.saveSettings(function() {
-				alert("Settings saved!");
-			});
-		});
-
-		/**
-		 * Bind a handler to the parent of option lists.
-		 */
-		var enableShortcuts = document.getElementById("shortcuts");
-
-		/* FIXME: We shouldn't have to do things this way.
-		 * Find a way to fix it.
-		 */
-		options['popup'] = options['popup'] || Object;
-		enableShortcuts.checked = (options.popup.enableShortcuts || false);
-		var shortcutsOptions = document.getElementById("shortcuts-options");
-		if (options.popup.enableShortcuts) {
-			shortcutsOptions.className = shortcutsOptions.className.replace('hide', '');
-		}
-
-
-		/*
-		 * Allow the user to wipe extension data.
-		 */
-		document.getElementById("terminate").addEventListener('click', function() {
-			if (confirm('Are you absolutely sure you want to erase ALL settings for PhabricateMe?')) {
-				chrome.storage.local.clear();
-				alert('Settings cleared.');
-			}
-		});
-
-	};
 
 	/**
 	 * Helper for controlling element visibility.
