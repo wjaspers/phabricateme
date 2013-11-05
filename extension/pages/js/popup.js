@@ -17,7 +17,7 @@
 			var myself = this, popup = {'popup': ''};
 
 			if (this.checked === true) {
-				popup = { 'popup' : 'pages/popup.html' };
+				popup = { 'popup' : 'pages/popup.htm' };
 			}
 
 			chrome.browserAction.setPopup(popup);
