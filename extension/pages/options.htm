@@ -6,6 +6,10 @@
 	<script src="/js/uri.js"></script>
 	<script src="/js/phabricateme.js"></script>
  	<script src="/js/options.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/common.css" />
+	<link rel="stylesheet" type="text/css" href="/css/options.css" />
 </head>
 <body>
   <div id="main">
@@ -27,7 +31,17 @@
 
 		<fieldset id="authorizationConfig">
 			<legend>Client Authorization</legend>
-			<div class="client-options">
+			<div class="form-element popup checkbox">
+				<input type="checkbox" 
+					class="inline"
+					name="authorization[enabled]"
+					id="authorizationEnabled"
+					value="1" 
+				/>
+				<label for="authorizationEnabled">Enable OAuth Adapter</label>
+			</div>
+
+			<div class="client-options hide" id="authorizationOptions">
 				<p>This information is required to read or update information within your Phabricator instance. If this data is not supplied, notifications, feeds, etc, will not work.</p>
 				<p>Not sure what any of this is? Ask your Phabricator administrator, or you can attempt to <a class="preview" href="https://secure.phabricator.com/oauthserver/clientauthorization/">create your own application configuration</a>.</p>
 				<div class="form-element client-name">
@@ -74,25 +88,24 @@
 				<input type="checkbox" 
 					class="inline"
 					name="popup[enabled]"
-					id="popup-enabled"
+					id="popupEnabled"
 					value="1" 
 				/>
-				<label for="popup-enabled">Enable Popup</label>
+				<label for="popupEnabled">Enable Popup</label>
 			</div>
-
-			<div class="form-element shortcuts checkbox">
+			<div class="form-element shortcuts checkbox hide" id="popupOptions">
 				<input type="checkbox" 
 					class="inline" 
 					name="popup[shortcuts]" 
-					id="shortcuts" 
+					id="shortcutsEnabled" 
 					value="1"
 				 />
-				<label for="shortcuts">Shortcuts</label>
-				<p data-for="shortcuts">If enabled, shortcuts are displayed in the popup, when activated.</p>
-			</div>
+				<label for="shortcutsEnabled">Shortcuts</label>
+				<p data-for="shortcutsEnabled">If enabled, shortcuts are displayed in the popup, when activated.</p>
 
-			<div class="form-element shortcuts-options hide" id="shortcuts-options">
-				<!-- shortcuts options are generated -->
+				<div class="form-element shortcuts-options hide" id="shortcutsOptions">
+					<!-- shortcuts options are generated -->
+				</div>
 			</div>
 		</fieldset>
 
@@ -133,7 +146,7 @@
   </div>
 
   <div class="footer">
-	<a class="btn btn-mini" href="/pages/credits.html" target="_blank">Credits</a>
+	<a class="btn btn-mini" href="/pages/credits.htm" target="_blank">Credits</a>
   </div>
 </script>
 </body>

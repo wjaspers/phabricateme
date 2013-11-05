@@ -90,7 +90,7 @@
 
 		// All that should remain is the path
 		this.pathname = decodeURIComponent(value);
-		this.pathname = this.sanitizePath(this.pathname);
+		this.pathname = Uri.sanitizePath(this.pathname);
 		return this;
 	};
 
@@ -154,7 +154,7 @@
 	 * @param string url
 	 * @return string
 	 */
-	Uri.prototype.sanitizePath = function (value) {
+	Uri.sanitizePath = function (value) {
 		return value.replace(/\/\/+/g, '/');
 	};
 

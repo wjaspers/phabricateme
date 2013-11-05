@@ -3,6 +3,7 @@
 
 	function Authorization() {
 		this.adapter = null;
+		this.settings = {};
 		this.initialize();
 	};
 
@@ -40,8 +41,9 @@
 			'client_secret': '7wcqoucqc6ysrrodqguzj2pofetneags',
 			'api_scope': 'offline_access'
 		};
-		this.adapter = new OAuth2('phabricator', configuration); 
+		this.adapter = new OAuth2('phabricator', configuration);
 	};
+
 
 	ph.Authorization = new Authorization;
 })(window.PhabricateMe);

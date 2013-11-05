@@ -1,0 +1,27 @@
+body {
+	margin: 5%;
+}
+
+label {
+	font-weight: bold;
+}
+
+.hide {
+	display: none;
+}
+
+.checkbox label {
+	display: inline;
+}
+
+.checkbox .shorcut-preview {
+	margin: 0 .5em;
+}
+
+legend label {
+	display: inline;
+}
+
+#shortcuts-options {
+	margin: .5em 1.5em;
+}

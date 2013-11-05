@@ -10,9 +10,17 @@
 			'client-secret': '',
 			'update-interval': 5
 		};
+		this.authorizationEnabled = document.getElementById('authorizationEnabled');
+		this.authorizationOptions = document.getElementById('authorizationOptions');
+		this.initialize();
 	};
 
-	Authorization.prototype.bind = function () {
+	Authorization.prototype.initialize = function () {
+		var self = this, settings = {};
+		this.authorizationEnabled.addEventListener('change', function () {
+			window.toggleVisibility(self.authorizationOptions, this.checked);
+		});		
+
 		var clientName = document.getElementById('client-name');
 		clientName.value = (settings['client-name'] || this.defaults['client-name']);
 		clientName.addEventListener('change', function () {

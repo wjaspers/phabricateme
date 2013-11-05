@@ -1,10 +1,10 @@
-(function() {
+/**
+ * Handles the Popup javascript.
+ */
+(function(ph, Uri) {
 	'use strict';
 
-	var ph = window.PhabricateMe;
-
 	function Popup() {
-		this.initialize();
 	};
 
 	Popup.prototype.initialize = function () {
@@ -34,4 +34,4 @@
 	};
 
 	ph.Popup = new Popup;
-})(window);
+})(window.PhabricateMe, window.Uri);

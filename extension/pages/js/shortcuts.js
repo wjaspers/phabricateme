@@ -2,17 +2,24 @@
 	'use strict';
 
 	function Shortcuts() {
-		// This is a global object and should not carry any properties.
+		this.shortcutsEnabled = document.getElementById('shortcutsEnabled');
+		this.shortcutsOptions = document.getElementById('shortcutsOptions');
+		this.initialize();
 	};
 
+	Shortcuts.prototype.initialize = function () {
+		var self = this;
+		self.shortcutsEnabled.addEventListener('change', function () {
+			window.toggleVisibility(self.shortcutsOptions, this.checked);
+		});
+	};
 
 	/**
 	 * Generates the checkboxes and labels for each shortcut option.
 	 * @param Array list
 	 */
-	Shortcuts.generateList = function (list) {
-		var container, uri = new Uri();
-		container = document.getElementById('shortcuts-options');
+	Shortcuts.prototype.generateList = function (list) {
+		var self = this, uri = new Uri();
 		// Iterate across shortcuts and turn them into checkboxes.
 		Object.getOwnPropertyNames(list).forEach(function (name, index) {
 			var checked, className, definition, input, label, linkText, previewLink, wrapper;
@@ -23,7 +30,7 @@
 			linkText = document.createTextNode('Preview');
 			previewLink = document.createElement('a');
 			previewLink.className = 'shortcut-preview inline';
-			previewLink.href = new Uri("https://secure.phabricator.com/" + definition.href).toString();
+			previewLink.href = uri.parse("https://secure.phabricator.com/" + definition.href).toString();
 			previewLink.target = "_blank";
 			previewLink.rel = name;
 			previewLink.appendChild(linkText);
@@ -53,7 +60,7 @@
 			wrapper.appendChild(input);
 			wrapper.appendChild(label);
 			wrapper.appendChild(previewLink);
-			container.appendChild(wrapper);
+			self.shortcutsOptions.appendChild(wrapper);
 		});
 	};
 
@@ -64,20 +71,19 @@
 	 * @param Uri uri the new URI to use
 	 * @param string current The current domain setting.
 	 */
-	Shortcuts.updateLinks = function (uri, current) {
+	Shortcuts.prototype.updateLinks = function (uri, current) {
 		var links = [], oldUri = new Uri(current);
 		links = document.getElementsByClassName('shortcut-preview');
 		Object.keys(links).forEach(function (index) {
-			var pathDef;
-			pathDef = ph.Shortcuts.fetchDefinition(links[index].rel);
+			var pathDef = ph.Shortcuts.fetchDefinition(links[index].rel);
 			links[index].protocol = uri.protocol;
 			links[index].port = uri.port;
 			links[index].hostname = uri.hostname;
 			if (pathDef) {
-				links[index].pathname = uri.pathname + pathDef.href;
+				links[index].pathname = Uri.sanitizePath(uri.pathname + pathDef.href);
 			}
 		});
 	};
 
-	ph.Options.Shortcuts = Shortcuts;
+	ph.Options.Shortcuts = new Shortcuts;
 })(window.PhabricateMe, window.Uri);

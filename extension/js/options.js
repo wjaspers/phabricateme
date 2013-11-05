@@ -1,7 +1,7 @@
 /**
  * Functionality strictly for the extension's options page.
  */
-(function (ph) {
+(function (ph, uri) {
 	'use strict';
 
 	document.addEventListener('DOMContentLoaded', function () {
@@ -14,6 +14,12 @@
 				authMe.addEventListener('click', function () {
 					ph.Authorization.authorize();
 				});
+			});
+
+			/**
+			 *
+			 */
+			ph.Options.fetchPlugin('Popup', function () {
 			});
 
 			/**
@@ -68,14 +74,7 @@
 		if (options.popup.enableShortcuts) {
 			shortcutsOptions.className = shortcutsOptions.className.replace('hide', '');
 		}
-		enableShortcuts.addEventListener('change', function() {
-			var myself = this, child = shortcutsOptions;
-			if (this.checked === true) {
-				child.className = child.className.replace("hide", '');
-			} else {
-				child.className += " hide";
-			}
-		});
+
 
 		/*
 		 * Allow the user to wipe extension data.
@@ -87,20 +86,28 @@
 			}
 		});
 
-		/*
-		 * Allows the user to disable the popup button.
-		 */
-		var popupEnabled = document.getElementById("popup-enabled");
-		popupEnabled.checked = (options.popup.enabled || false);
-		popupEnabled.addEventListener('change', function() {
-			var myself = this, popup = {'popup': ''};
-
-			if (this.checked === true) {
-				popup = { 'popup' : 'pages/popup.html' };
-			}
-
-			chrome.browserAction.setPopup(popup);
-		});
 	};
 
-})(window.PhabricateMe);
+	/**
+	 * Helper for controlling element visibility.
+	 *
+	 * @param DOMNode element
+	 * @param boolean state
+	 */
+	window.toggleVisibility = function (element, state) {
+		var classNames = element.className.split(' ');
+		classNames = classNames.filter(function (className) {
+			if (className === 'hide') {
+				return false;
+			}
+			return true;
+		});
+
+		if (state === false) {
+			classNames.push('hide');
+		}
+
+		element.className = classNames.join(' ');
+	};
+
+})(window.PhabricateMe, window.Uri);

@@ -13,6 +13,7 @@
 	pluginList = [
 		'Authorization',
 		'Options',
+		'Popup',
 		'Shortcuts',
 	];
 
@@ -26,6 +27,10 @@
 
 
 	function PhabricateMe() {
+		var self = this;
+		this.loadSettings(function (settings) {
+			self.settings = settings;
+		});
 	};
 
 
@@ -96,6 +101,54 @@
 	 */
 	PhabricateMe.prototype.isValidPlugin = function (name) {
 		return (pluginListStr.search(name) >= 0);
+	};
+
+
+	/**
+	 * @param string pluginName
+	 * @param Closure callback
+	 */
+	PhabricateMe.prototype.loadPluginSettings = function (pluginName, callback) {
+		var self = this;
+		this.loadSettings(function (settings) {
+			var pluginSettings = settings[pluginName] || undefined;
+			return callback.apply(self, [pluginSettings]);
+		});
+	};
+
+
+	/**
+	 * Retrieve settings from local storage.
+	 * @param Closure callback
+	 */
+	PhabricateMe.prototype.loadSettings = function (callback) {
+		var self = this;
+
+		chrome.storage.local.get(function (settings) {
+			self.settings = settings;
+			if (callback) {
+				callback.apply(self, [settings]);
+			}
+		});
+	};
+
+
+	/**
+	 * Commit settings to chrome's local storage.
+	 *
+	 * @param Closure callback
+	 *  Optional callback to execute when local storage is done updating.
+	 */
+	PhabricateMe.prototype.saveSettings = function (callback) {
+		var myself = this;
+		/* FIXME:
+		 * Chrome doesn't remove properties when the object changes.
+		 * For now, we'll wipe the slate clean and store only
+		 * what we currently have.
+		 */
+		chrome.storage.local.clear(function () {
+			chrome.storage.local.set(myself.settings, callback);
+		});
 	};
 
 	window.PhabricateMe = new PhabricateMe;
