@@ -80,7 +80,17 @@
 		Object.keys(links).forEach(function (index) {
 			var pathDef = ph.Shortcuts.fetchDefinition(links[index].rel);
 			links[index].protocol = uri.protocol;
-			links[index].port = uri.port;
+			/**
+			 * FIXME: This is a bug in chrome.
+			 *        If I set the port number to absolutely
+			 *        anything non-numeric, chrome forces
+		 	 *        it to 0, resulting in invalid links.
+			 */
+			if (! +uri.port) {
+				delete links[index].port;
+			} else {
+				links[index].port = uri.port;
+			}
 			links[index].hostname = uri.hostname;
 			if (pathDef) {
 				links[index].pathname = Uri.sanitizePath(uri.pathname + pathDef.href);

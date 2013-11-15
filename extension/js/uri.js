@@ -80,14 +80,6 @@
 			}
 		}
 
-		/* I'm not thrilled to add this magic behavior, but chrome
-		 * doesn't appear to handle manually setting 
-		 * <a>.port = undefined or <a>.port = null correctly.
-		 */
-		if (this.protocol && ! +this.port) {
-			this.port = this.fetchDefaultPortForProtocol(this.protocol);
-		}
-
 		// All that should remain is the path
 		this.pathname = decodeURIComponent(value);
 		this.pathname = Uri.sanitizePath(this.pathname);

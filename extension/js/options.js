@@ -44,9 +44,9 @@
 			domain.addEventListener('change', function () {
 				var uri = new Uri(this.value);
 				ph.Settings.domain = uri.toString();
+				this.value = ph.Settings.domain;
 			});
-
-			domain.value = ph.Settings.get('domain');
+			domain.value = ph.Settings.domain;
 
 
 			/**
