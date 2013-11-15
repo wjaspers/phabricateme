@@ -12,8 +12,9 @@
 
 	pluginList = [
 		'Authorization',
-		'Options',
+		'Options', // FIXME: Remove this. Only the Options page should be able to load this.
 		'Popup',
+		'Settings',
 		'Shortcuts',
 	];
 
@@ -28,9 +29,9 @@
 
 	function PhabricateMe() {
 		var self = this;
-		this.loadSettings(function (settings) {
-			self.settings = settings;
-		});
+		self.isLoading = false;
+		self.queued = [];
+		this.fetchPlugin('Settings');
 	};
 
 
@@ -62,14 +63,14 @@
 		}
 
 		// See if we've already loaded it.
-		if ('undefined' !== typeof window.PhabricateMe[name]) {
-			return window.PhabricateMe[name];
+		if ('undefined' !== typeof self[name]) {
+			return self[name];
 		}
 
 		path = '/js/plugins/' + name.toLowerCase() + '.js';
 		this._loadScript(path, function () {
 			if (callback) {
-				callback.apply(self, [window.PhabricateMe[name]]);
+				callback.apply(self, [self[name]]);
 			}
 		});
 	};
@@ -81,10 +82,16 @@
 	 */
 	PhabricateMe.prototype._loadScript = function (path, callback) {
 		var script, self = this;
+		if (this.loading) {
+			this.queueLoad(path, callback);
+			return;
+		}
+		self.loading = true;
 		// chrome.tabs.executeScript doesnt work with background pages.
 		script = document.createElement('script');
 		script.src = chrome.extension.getURL(path);
-		script.addEventListener('load', function () { 
+		script.addEventListener('load', function () {
+			self.finishLoadEvent();
 			if (callback) {
 				callback.apply(self);
 			}
@@ -92,6 +99,20 @@
 		document.head.appendChild(script);
 	};
 
+	/**
+	 * Needed to prevent race conditions between plugins being loaded.
+	 */
+	PhabricateMe.prototype.finishLoadEvent = function () {
+		var self = this, next = self.queued.shift();
+		self.loading = false;
+		if (next) {
+			self._loadScript(next.path, next.callback);
+		}
+	};
+
+	PhabricateMe.prototype.queueLoad = function (path, callback) {
+		this.queued.push({path: path, callback: callback});
+	};
 
 	/**
 	 * Checks if the plugin name provided is actually defined.
@@ -101,54 +122,6 @@
 	 */
 	PhabricateMe.prototype.isValidPlugin = function (name) {
 		return (pluginListStr.search(name) >= 0);
-	};
-
-
-	/**
-	 * @param string pluginName
-	 * @param Closure callback
-	 */
-	PhabricateMe.prototype.loadPluginSettings = function (pluginName, callback) {
-		var self = this;
-		this.loadSettings(function (settings) {
-			var pluginSettings = settings[pluginName] || undefined;
-			return callback.apply(self, [pluginSettings]);
-		});
-	};
-
-
-	/**
-	 * Retrieve settings from local storage.
-	 * @param Closure callback
-	 */
-	PhabricateMe.prototype.loadSettings = function (callback) {
-		var self = this;
-
-		chrome.storage.local.get(function (settings) {
-			self.settings = settings;
-			if (callback) {
-				callback.apply(self, [settings]);
-			}
-		});
-	};
-
-
-	/**
-	 * Commit settings to chrome's local storage.
-	 *
-	 * @param Closure callback
-	 *  Optional callback to execute when local storage is done updating.
-	 */
-	PhabricateMe.prototype.saveSettings = function (callback) {
-		var myself = this;
-		/* FIXME:
-		 * Chrome doesn't remove properties when the object changes.
-		 * For now, we'll wipe the slate clean and store only
-		 * what we currently have.
-		 */
-		chrome.storage.local.clear(function () {
-			chrome.storage.local.set(myself.settings, callback);
-		});
 	};
 
 	window.PhabricateMe = new PhabricateMe;

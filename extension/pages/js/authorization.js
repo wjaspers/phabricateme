@@ -8,17 +8,21 @@
 		this.defaults = {
 			'client-name': '',
 			'client-secret': '',
-			'update-interval': 5
+			'update-interval': 5,
+			'enabled': false
 		};
-		this.authorizationEnabled = document.getElementById('authorizationEnabled');
 		this.authorizationOptions = document.getElementById('authorizationOptions');
 		this.initialize();
 	};
 
 	Authorization.prototype.initialize = function () {
-		var self = this, settings = {};
-		this.authorizationEnabled.addEventListener('change', function () {
+		var self = this, settings = ph.Settings.get('Authorization');
+		var enabled = document.getElementById('authorizationEnabled');
+
+		enabled.checked = (settings.enabled || this.defaults.enabled);
+		enabled.addEventListener('change', function () {
 			window.toggleVisibility(self.authorizationOptions, this.checked);
+			settings.enabled = this.checked;
 		});		
 
 		var clientName = document.getElementById('client-name');
@@ -38,6 +42,8 @@
 		updateInterval.addEventListener('change', function () {
 			settings['update-interval'] = this.value;
 		});
+
+		window.toggleVisibility(this.authorizationOptions, enabled.checked);
 	};
 
 	ph.Options.Authorization = new Authorization;

@@ -9,17 +9,18 @@
 			/**
 			 * 
 			 */
-			ph.Options.fetchPlugin('Authorization', function () {
+			ph.Options.fetchPlugin('Authorization', function (plugin) {
 				var authMe = document.getElementById('authorize');
 				authMe.addEventListener('click', function () {
 					ph.Authorization.authorize();
 				});
 			});
 
+
 			/**
 			 *
 			 */
-			ph.Options.fetchPlugin('Popup', function () {
+			ph.Options.fetchPlugin('Popup', function (plugin) {
 			});
 
 
@@ -28,7 +29,7 @@
 			 */
 			ph.Options.fetchPlugin('Shortcuts', function(plugin) {
 				var list = ph.Shortcuts.getAllLinks();
-				plugin.generateList(list);
+				plugin.initialize(list);
 				domain.addEventListener('change', function () {
 					var uri = new Uri(this.value);
 					plugin.updateLinks(uri);
@@ -42,28 +43,35 @@
 			var domain = document.getElementById("domain");
 			domain.addEventListener('change', function () {
 				var uri = new Uri(this.value);
-				console.log(uri.toString());
+				ph.Settings.domain = uri.toString();
 			});
+
+			domain.value = ph.Settings.get('domain');
 
 
 			/**
 			 * Bind a handler to the "save" button.
 			 */
-			document.getElementById("save").addEventListener('click', function() {
-				ph.Options.saveSettings(function() {
+			document.getElementById("save").addEventListener('click', function(event) {
+				ph.Settings.save(function() {
 					alert("Settings saved!");
 				});
+				event.preventDefault();
+				return false;
 			});
 
 
 			/*
 			 * Allow the user to wipe extension data.
 			 */
-			document.getElementById("terminate").addEventListener('click', function() {
+			document.getElementById("terminate").addEventListener('click', function(event) {
 				if (confirm('Are you absolutely sure you want to erase ALL settings for PhabricateMe?')) {
-					chrome.storage.local.clear();
-					alert('Settings cleared.');
+					ph.Settings.clear(function () {	
+						alert('Settings cleared.');
+					});
 				}
+				event.preventDefault();
+				return false;
 			});
 		});
 	});
@@ -77,10 +85,7 @@
 	window.toggleVisibility = function (element, state) {
 		var classNames = element.className.split(' ');
 		classNames = classNames.filter(function (className) {
-			if (className === 'hide') {
-				return false;
-			}
-			return true;
+			return className !== 'hide';
 		});
 
 		if (state === false) {
@@ -89,5 +94,4 @@
 
 		element.className = classNames.join(' ');
 	};
-
 })(window.PhabricateMe, window.Uri);

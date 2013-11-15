@@ -4,24 +4,27 @@
 	function Shortcuts() {
 		this.shortcutsEnabled = document.getElementById('shortcutsEnabled');
 		this.shortcutsOptions = document.getElementById('shortcutsOptions');
-		this.initialize();
 	};
 
-	Shortcuts.prototype.initialize = function () {
-		var self = this;
+	Shortcuts.prototype.initialize = function (list) {
+		var self = this, settings = ph.Settings.get('Shortcuts');
 		self.shortcutsEnabled.addEventListener('change', function () {
 			window.toggleVisibility(self.shortcutsOptions, this.checked);
+			settings.enabled = this.checked;
 		});
+
+		this.generateList(list);
+		shortcutsEnabled.checked = settings.enabled;
+		window.toggleVisibility(self.shortcutsOptions, settings.enabled);
 	};
 
 	/**
 	 * Generates the checkboxes and labels for each shortcut option.
-	 * @param Array list
 	 */
 	Shortcuts.prototype.generateList = function (list) {
-		var self = this, uri = new Uri();
+		var self = this, settings = ph.Settings.Shortcuts, uri = new Uri();
 		// Iterate across shortcuts and turn them into checkboxes.
-		Object.getOwnPropertyNames(list).forEach(function (name, index) {
+		Object.getOwnPropertyNames(list).forEach(function (name) {
 			var checked, className, definition, input, label, linkText, previewLink, wrapper;
 			definition = list[name];
 			className = "shortcut-" + name;
@@ -37,15 +40,15 @@
 
 			// Generate the input checkbox.
 			input = document.createElement('input');
-			input.checked = false;
+			input.checked = settings[name] || false;
 			input.type = "checkbox";
 			input.name = name;
 			input.id   = className;
 			input.value = 1;
-			input.addEventListener('change', function () {
-					var myself = this, popup = {'shortcuts': {}};
-					popup.shortcuts[myself.name] = myself.checked;
-				}, false);
+			input.addEventListener('change', function (event) {
+				var rel = previewLink.rel;
+				settings[rel] = this.checked;
+			}, false);
 
 			// Generate the label.
 			label = document.createElement('label');

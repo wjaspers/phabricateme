@@ -3,7 +3,6 @@
 
 	function Authorization() {
 		this.adapter = null;
-		this.settings = {};
 		this.initialize();
 	};
 

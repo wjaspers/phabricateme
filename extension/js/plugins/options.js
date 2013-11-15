@@ -28,15 +28,10 @@
 
 			path = '/pages/js/' + name.toLowerCase() + '.js';
 			ph._loadScript(path, function () {
-				self[name].loadSettings = function (callback) {
-					return self.loadPluginSettings(name, callback);
-				};
-
 				callback.apply(self, [self[name]]);
 			});
 		});
 	};
-
 
 	ph.Options = new Options;
 })(window.PhabricateMe);

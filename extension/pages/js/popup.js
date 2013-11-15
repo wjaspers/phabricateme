@@ -6,23 +6,26 @@
 	};
 
 	Popup.prototype.initialize = function () {
-		/*
-		 * Allows the user to disable the popup button.
-		 */
-		var popupEnabled, popupOptions;
+		var popupEnabled, popupOptions, settings = ph.Settings.get('Popup');
 		popupEnabled = document.getElementById("popupEnabled");
 		popupOptions = document.getElementById("popupOptions");
-		popupEnabled.checked = false; // Where do option values come from?
+
 		popupEnabled.addEventListener('change', function() {
-			var myself = this, popup = {'popup': ''};
-
-			if (this.checked === true) {
-				popup = { 'popup' : 'pages/popup.htm' };
-			}
-
-			chrome.browserAction.setPopup(popup);
+			var path, self = this;
+			ph.Settings.Popup.enabled = this.checked;
+			path = this.checked ? 'pages/popup.htm' : '';
+			setPopupLocation(path);
 			window.toggleVisibility(popupOptions, this.checked);
 		});
+
+		popupEnabled.checked = settings.enabled || false;
+		window.toggleVisibility(popupOptions, popupEnabled.checked);
+	};
+
+	function setPopupLocation (path) {
+		var def = {};
+		def.popup = path;
+		chrome.browserAction.setPopup(def);
 	};
 
 	ph.Options.Popup = new Popup();
