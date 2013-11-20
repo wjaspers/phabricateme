@@ -4,21 +4,21 @@
  */
 (function (ph) {
 	'use strict';
-	
+
 	function Settings() {
-		this.initialize();
 	};
 
 
-	Settings.prototype.initialize = function () {
+	Settings.prototype.initialize = function (callback) {
 		var self = this;
-		ph.isLoading = true;
 		chrome.storage.local.get(function (settings) {
 			Object.getOwnPropertyNames(settings).forEach(function (property) {
 				var value = settings[property];
 				self[property] = value;
 			});
-			ph.isLoading = false;
+			if (callback) {
+				callback.apply(self, [self]);
+			}
 		});
 	};
 
@@ -35,9 +35,8 @@
 		});
 	};
 
-
-	Settings.prototype.load = function () {
-		this.initialize();
+	Settings.prototype.load = function (callback) {
+		this.initialize(callback);
 	};
 
 	Settings.prototype.get = function (name) {
@@ -50,7 +49,7 @@
 	/**
 	 * Commits the settings to local storage.
 	 */
-	Settings.prototype.save = function () {
+	Settings.prototype.save = function (callback) {
 		var self = this;
 		/* FIXME:
 		 * Chrome doesn't remove properties when the object changes.
@@ -58,10 +57,13 @@
 		 * what we currently have.
 		 */
 		chrome.storage.local.clear(function () {
-			chrome.storage.local.set(self);
+			chrome.storage.local.set(self, function () {
+				if (callback) {
+					callback.apply(self);
+				}
+			});
 		});
 	};
-
 
 	ph.Settings = new Settings;
 })(window.PhabricateMe);

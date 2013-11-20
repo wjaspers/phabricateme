@@ -45,32 +45,42 @@
 			<div class="client-options clearfix hide" id="authorizationOptions">
 				<p>This information is required to read or update information within your Phabricator instance. If this data is not supplied, notifications, feeds, etc, will not work.</p>
 				<p>Not sure what any of this is? Ask your Phabricator administrator, or you can attempt to <a class="preview" href="https://secure.phabricator.com/oauthserver/clientauthorization/">create your own application configuration</a>.</p>
-				<div class="form-element client-name">
-					<label for="client-name">Client Name</label>
-					<p data-for="client-name">The name you want to give this chrome extension in your Phabricator instance. The OAuth API requires this to access objects via the Conduit API.</p>
+				<div class="form-element clientName">
+					<label for="clientName">Client Name</label>
+					<p data-for="clientName">The name you want to give this chrome extension in your Phabricator instance. The OAuth API requires this to access objects via the Conduit API.</p>
 					<input type="text" 
 						name="authorization[clientName]"
-						id="client-name"
+						id="clientName"
 						placeholder="PhabricateMe" 
 					/>
 				</div>
 
-				<div class="form-element client-secret">
-					<label for="client-secret">Client Secret</label>
-					<p data-for="client-secret">The OAuth secret token generated for your client.</p>
+				<div class="form-element clientId">
+					<label for="clientId">Client ID</label>
+					<p data-for="clientId">The PH-ID generated for your client.</p>
 					<input type="text" 
-						name="authorization[clientSecret]" 
-						id="client-secret" 
+						name="authorization[clientId]" 
+						id="clientId" 
 						placeholder="abc123" 
 					/>
 				</div>
-				<div class="form-element update-interval">
-					<label for="update-interval">Update Interval</label>
-					<p data-for="update-interval">How frequently (in seconds) to ask Phabricator for information. There is a 5 second minimum, so phabricator instances aren't getting pummeled with requests.</p>
+
+				<div class="form-element clientSecret">
+					<label for="clientSecret">Client Secret</label>
+					<p data-for="clientSecret">The OAuth secret token generated for your client.</p>
+					<input type="text" 
+						name="authorization[clientSecret]" 
+						id="clientSecret" 
+						placeholder="abc123" 
+					/>
+				</div>
+				<div class="form-element updateInterval">
+					<label for="updateInterval">Update Interval</label>
+					<p data-for="updateInterval">How frequently (in seconds) to ask Phabricator for information. There is a 5 second minimum, so phabricator instances aren't getting pummeled with requests.</p>
 					<input class="input" 
 						type="number" 
 						name="authorization[updateInterval]" 
-						id="update-interval" 
+						id="updateInterval" 
 						min="5" 
 						max="180" pattern="[0-9]{1,3}" 
 						required 

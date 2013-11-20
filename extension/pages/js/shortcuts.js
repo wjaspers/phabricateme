@@ -76,6 +76,9 @@
 	 */
 	Shortcuts.prototype.updateLinks = function (uri, current) {
 		var links = [], oldUri = new Uri(current);
+		if ('string' === typeof uri) {
+			uri = new Uri(uri);
+		}
 		links = document.getElementsByClassName('shortcut-preview');
 		Object.keys(links).forEach(function (index) {
 			var pathDef = ph.Shortcuts.fetchDefinition(links[index].rel);

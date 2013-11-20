@@ -6,9 +6,10 @@
 
 	function Authorization() {
 		this.defaults = {
-			'client-name': '',
-			'client-secret': '',
-			'update-interval': 5,
+			'client_name': '',
+			'client_secret': '',
+			'client_id': '',
+			'update_interval': 5,
 			'enabled': false
 		};
 		this.authorizationOptions = document.getElementById('authorizationOptions');
@@ -23,24 +24,30 @@
 		enabled.addEventListener('change', function () {
 			window.toggleVisibility(self.authorizationOptions, this.checked);
 			settings.enabled = this.checked;
-		});		
+		});
 
-		var clientName = document.getElementById('client-name');
-		clientName.value = (settings['client-name'] || this.defaults['client-name']);
+		var clientName = document.getElementById('clientId');
+		clientName.value = (settings['client_id'] || this.defaults['client_id']);
 		clientName.addEventListener('change', function () {
-			settings['client-name'] = this.value;
+			settings['client_id'] = this.value;
 		});
 
-		var clientSecret = document.getElementById('client-secret');
-		clientSecret.value = (settings['client-secret'] || this.defaults['client-secret']);
+		var clientName = document.getElementById('clientName');
+		clientName.value = (settings['client_name'] || this.defaults['client_name']);
+		clientName.addEventListener('change', function () {
+			settings['client_name'] = this.value;
+		});
+
+		var clientSecret = document.getElementById('clientSecret');
+		clientSecret.value = (settings['client_secret'] || this.defaults['client_secret']);
 		clientSecret.addEventListener('change', function () {
-			settings['client-secret'] = this.value;
+			settings['client_secret'] = this.value;
 		});
 
-		var updateInterval = document.getElementById('update-interval');
-		updateInterval.value = (settings['update-interval'] || this.defaults['update-interval']);
+		var updateInterval = document.getElementById('updateInterval');
+		updateInterval.value = (settings['update_interval'] || this.defaults['update_interval']);
 		updateInterval.addEventListener('change', function () {
-			settings['update-interval'] = this.value;
+			settings['update_interval'] = this.value;
 		});
 
 		window.toggleVisibility(this.authorizationOptions, enabled.checked);

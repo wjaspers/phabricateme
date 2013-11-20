@@ -6,72 +6,80 @@
 
 	document.addEventListener('DOMContentLoaded', function () {
 		ph.fetchPlugin('Options', function () {
-			/**
-			 * 
-			 */
-			ph.Options.fetchPlugin('Authorization', function (plugin) {
-				var authMe = document.getElementById('authorize');
-				authMe.addEventListener('click', function () {
-					ph.Authorization.authorize();
-				});
-			});
-
-
-			/**
-			 *
-			 */
-			ph.Options.fetchPlugin('Popup', function (plugin) {
-			});
-
-
-			/**
-			 *
-			 */
-			ph.Options.fetchPlugin('Shortcuts', function(plugin) {
-				var list = ph.Shortcuts.getAllLinks();
-				plugin.initialize(list);
+			ph.Settings.load(function () {
+				/**
+				 * Listen for changes to the domain.
+				 */
+				var domain = document.getElementById("domain");
 				domain.addEventListener('change', function () {
 					var uri = new Uri(this.value);
-					plugin.updateLinks(uri);
+					ph.Settings.domain = uri.toString();
+					this.value = ph.Settings.domain;
 				});
-			});
 
-
-			/**
-			 * Listen for changes to the domain.
-			 */
-			var domain = document.getElementById("domain");
-			domain.addEventListener('change', function () {
-				var uri = new Uri(this.value);
-				ph.Settings.domain = uri.toString();
-				this.value = ph.Settings.domain;
-			});
-			domain.value = ph.Settings.domain;
-
-
-			/**
-			 * Bind a handler to the "save" button.
-			 */
-			document.getElementById("save").addEventListener('click', function(event) {
-				ph.Settings.save(function() {
-					alert("Settings saved!");
-				});
-				event.preventDefault();
-				return false;
-			});
-
-
-			/*
-			 * Allow the user to wipe extension data.
-			 */
-			document.getElementById("terminate").addEventListener('click', function(event) {
-				if (confirm('Are you absolutely sure you want to erase ALL settings for PhabricateMe?')) {
-					ph.Settings.clear(function () {	
-						alert('Settings cleared.');
-					});
+				if (ph.Settings.domain) {
+					domain.value = ph.Settings.domain;
 				}
-				event.preventDefault();
-				return false;
+
+				/**
+				 * 
+				 */
+				ph.Options.fetchPlugin('Authorization', function (plugin) {
+					var authMe = document.getElementById('authorize');
+					authMe.addEventListener('click', function (event) {
+						ph.Authorization.authorize();
+						event.preventDefault();
+						return false;
+					});
+				});
+
+
+				/**
+				 *
+				 */
+				ph.Options.fetchPlugin('Popup', function (plugin) {
+				});
+
+
+				/**
+				 *
+				 */
+				ph.Options.fetchPlugin('Shortcuts', function(plugin) {
+					var list = ph.Shortcuts.getAllLinks();
+					plugin.initialize(list);
+					domain.addEventListener('change', function () {
+						var uri = new Uri(this.value);
+						plugin.updateLinks(uri);
+					});
+					
+					plugin.updateLinks(ph.Settings.domain);
+				});
+
+
+				/**
+				 * Bind a handler to the "save" button.
+				 */
+				document.getElementById("save").addEventListener('click', function(event) {
+					ph.Settings.save(function() {
+						alert("Settings saved!");
+					});
+					event.preventDefault();
+					return false;
+				});
+
+
+				/*
+				 * Allow the user to wipe extension data.
+				 */
+				document.getElementById("terminate").addEventListener('click', function(event) {
+					if (confirm('Are you absolutely sure you want to erase ALL settings for PhabricateMe?')) {
+						ph.Settings.clear(function () {	
+							alert('Settings cleared.');
+						});
+					}
+					event.preventDefault();
+					return false;
+				});
 			});
 		});
 	});
