@@ -37,7 +37,12 @@
 				link.rel = name;
 				link.appendChild(linkText);
 				link.protocol = uri.protocol;
-				link.port = uri.port;
+				if (uri.port) {
+					link.port = uri.port;
+				} else {
+					// FIXME: This is a bug in chrome
+					delete link.port;
+				}
 				link.hostname = uri.hostname;
 				link.pathname = Uri.sanitizePath(uri.pathname + shortcutsList[name].href);
 				document.body.appendChild(link);
