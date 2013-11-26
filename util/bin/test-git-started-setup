@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # Ensure things are all correct
 
 . "${0%/*}"/git-started-setup
@@ -7,19 +7,32 @@
 FAILURES=0
 TESTS=0
 
-function TEST() {
-	printf "%s" "$1: "
-	: $((TESTS++))
+function FAIL() {
+	echo "FAIL"
+	echo " ****** $1"
+	: $((FAILURES++))
+}
+
+function MAKE_REPO() {
+	local TEMP_REPO
+	TEMP_REPO="$(mktemp -d)"
+	(
+		cd "$TEMP_REPO"
+		git init
+		echo "Test repo" > test.txt
+		git add test.txt
+		git commit -m "Initial commit"
+	) > /dev/null
+	echo "$TEMP_REPO"
 }
 
 function PASS() {
 	echo "ok"
 }
 
-function FAIL() {
-	echo "FAIL"
-	echo " ****** $1"
-	: $((FAILURES++))
+function TEST() {
+	printf "%s" "$1: "
+	: $((TESTS++))
 }
 
 
@@ -63,6 +76,13 @@ done
 
 
 #
+# get_executable
+#
+TEST "get_executable"
+FAIL "No tests exist"
+
+
+#
 # get_file_type
 #
 for FILE in a.css:css b.js:js c.html:html cc.htm:html d.php:php dd.inc:php e.txt:unknown; do
@@ -82,15 +102,38 @@ done
 #
 # is_submodule
 #
-TEST "is_submodule"
-# Tests to write
-# /root - false
-# /root/sub - false
-# /root/root - true
-# /root/sub/root - true
-# /root/root/sub - true
-# /root/sub/root/sub - true
-FAIL "no tests exist"
+
+# First, create a test repository that has a specific directory structure
+# for testing
+TEMP_REPO="$(MAKE_REPO)"
+(
+	cd "$TEMP_REPO"
+	mkdir dir
+	git submodule add ./ submodule
+	git submodule add ./ dir/submodule
+	mkdir submodule/dir
+	mkdir dir/submodule/dir
+) > /dev/null
+
+for DIR_RESULT in /:false /dir:false /submodule:true /dir/submodule:true /submodule/dir:true /dir/submodule/dir:true; do
+	EXPECTED="${DIR_RESULT##*:}"
+	INPUT="${DIR_RESULT%:*}"
+
+	TEST "is_submodule repo${INPUT} = $EXPECTED"
+
+	if (cd "${TEMP_REPO}${INPUT}"; is_submodule); then
+		ACTUAL="true"
+	else
+		ACTUAL="false"
+	fi
+
+	if [ "$ACTUAL" == "$EXPECTED" ]; then
+		PASS
+	else
+		FAIL "got \"$ACTUAL\""
+	fi
+done
+rm -rf "$TEMP_REPO"
 
 
 #
@@ -230,6 +273,85 @@ else
 	FAIL "ls was not found"
 fi
 
+
+#
+# How the git hooks initially tie into our software
+#
+# This is a bit special as they are executed in an environment like what
+# I will set up in the test.  Doing a "cd .git/hooks/../../bin" goes to the
+# bin directory, but ". .git/hooks/../../bin/file" will use util/bin.  To
+# Eliminate that problem, I use readlink for the git hooks.
+TEMP_REPO="$(MAKE_REPO)"
+(
+	cd "$TEMP_REPO"
+	mkdir -p bin util/bin util/git/hooks
+	rm -rf .git/hooks
+	ln -s ../util/git/hooks .git/hooks
+	for F in bin/test_path util/bin/test_path; do
+		# git-started-setup uses a method like this to determine
+		# where its repository's root is located
+		echo "#!/bin/bash" > "$TEMP_REPO/$F"
+		echo "echo \"$F\"" >> "$TEMP_REPO/$F"
+		chmod 755 "$TEMP_REPO/$F"
+	done
+) > /dev/null
+TEST "working directory (git hooks + setup)"
+
+# Git hooks use a method like this to determine which file to execute
+cat > "$TEMP_REPO/util/git/hooks/post-checkout" <<EOF
+#!/bin/bash
+. "\$(readlink -f "\${0%/*}/../..")/bin/test_path"
+EOF
+chmod 755 "$TEMP_REPO/util/git/hooks/post-checkout"
+ACTUAL="$(cd "$TEMP_REPO"; .git/hooks/post-checkout)"
+EXPECTED="util/bin/test_path"
+if [ "$ACTUAL" == "$EXPECTED" ]; then
+	PASS
+else
+	FAIL "Expecting $EXPECTED but got $ACTUAL"
+fi
+rm -rf "$TEMP_REPO"
+
+
+#
+# This tests the ability for git-started to insert itself in a
+# repository either as a submodule or by being merged.
+#
+SOURCE="$(pwd)"
+TEST "submodule - pre-commit"
+TEMP_REPO="$(MAKE_REPO)"
+(
+	cd "$TEMP_REPO"
+	git submodule add "$SOURCE" "git-started"
+	git commit -m "Adding git-started"
+	git-started/util/bin/setup_repository
+	echo "NO""COMMIT" > test2.txt
+	git add test2.txt
+) > /dev/null
+if ( cd "$TEMP_REPO"; git commit -m "checking pre-commit hook" > /dev/null 2>&1 ); then
+	FAIL "the commit should have been blocked"
+else
+	PASS
+fi
+rm -rf "$TEMP_REPO"
+
+TEST "merged - pre-commit"
+TEMP_REPO="$(MAKE_REPO)"
+(
+	cd "$TEMP_REPO"
+	git remote add origin "$SOURCE"
+	git fetch origin
+	git merge -m 'auto merge' origin/master
+	util/bin/setup_repository
+	echo "NO""COMMIT" > test2.txt
+	git add test2.txt
+) > /dev/null 2>&1
+if ( cd "$TEMP_REPO"; git commit -m "checking pre-commit hook" > /dev/null 2>&1 ); then
+	FAIL "the commit should have been blocked"
+else
+	PASS
+fi
+rm -rf "$TEMP_REPO"
 
 #
 # Done!
