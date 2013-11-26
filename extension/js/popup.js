@@ -43,6 +43,7 @@
 					// FIXME: This is a bug in chrome
 					delete link.port;
 				}
+				link.title = shortcutsList[name].tip;
 				link.hostname = uri.hostname;
 				link.pathname = Uri.sanitizePath(uri.pathname + shortcutsList[name].href);
 				document.body.appendChild(link);

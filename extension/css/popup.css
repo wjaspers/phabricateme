@@ -1,0 +1,14 @@
+body {
+    font-size: 92.5%;
+}
+
+/**
+ * TODO: the font and line height should be configurable.
+ */
+a, a:visited {
+    display: block;
+    font-family: helvetica, arial, sans-serif;
+    color: #3333dd;
+    text-decoration: none;
+    line-height: 1.5em;
+}
