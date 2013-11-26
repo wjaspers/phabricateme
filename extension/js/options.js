@@ -53,8 +53,10 @@
                         var uri = new Uri(this.value);
                         plugin.updateLinks(uri);
                     });
-                    
-                    plugin.updateLinks(ph.Settings.domain);
+                   
+            if (ph.Settings.domain) { 
+                        plugin.updateLinks(ph.Settings.domain);
+            }
                 });
 
 
