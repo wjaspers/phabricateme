@@ -1,0 +1,3 @@
+[submodule "3rd_party/oauth2-extensions"]
+	path = 3rd_party/oauth2-extensions
+	url = https://github.com/wjaspers/oauth2-extensions
