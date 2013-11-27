@@ -4,15 +4,6 @@
 	"version": "2",
 	"description": "Work smarter, not harder, with your Phabricator instance.",
 
-	"background": {
-		"scripts": [
-			"oauth2/oauth2.js",
-			"js/phabricateme.js",
-			"js/background.js"
-		],
-		"persistent": false
-	},
-
 	"content_scripts": [
 		{
 			"matches": ["*://*/robots.txt"],
@@ -35,9 +26,7 @@
 
 	"permissions": [
 		"*://*/*",
-		"tabs",
-		"alarms",
-		"background",
+		"tabs"
 		"storage"
 	],
 
