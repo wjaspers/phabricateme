@@ -28,7 +28,9 @@
 
 			path = '/pages/js/' + name.toLowerCase() + '.js';
 			ph._loadScript(path, function () {
-				callback.apply(self, [self[name]]);
+				if (callback) {
+					callback.apply(self, [self[name]]);
+				}
 			});
 		});
 	};
