@@ -1,9 +1,6 @@
 /**
  * Functionality specific to the browser button.
  */
-/**
- * Wait for the popup's DOM to be ready.
- */
 (function(ph, uri) {
     'use strict';
     document.addEventListener('DOMContentLoaded', function () {
